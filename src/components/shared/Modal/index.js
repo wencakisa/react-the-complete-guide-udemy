@@ -6,7 +6,7 @@ import styles from './styles.module.css';
 
 const Modal = ({ onClose, children }) => (
   <>
-    <Backdrop onClick={onClose} />
+    <Backdrop show onClick={onClose} />
     <div className={styles.modal}>{children}</div>
   </>
 );

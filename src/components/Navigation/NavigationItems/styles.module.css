@@ -1,0 +1,19 @@
+.navigationItems nav {
+  height: 100%;
+}
+
+.navigationItems ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  flex-flow: column;
+  height: 100%;
+}
+
+@media (min-width: 500px) {
+  .navigationItems ul {
+    flex-flow: row;
+  }
+}
