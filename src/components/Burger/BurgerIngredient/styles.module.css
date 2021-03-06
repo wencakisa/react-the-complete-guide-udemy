@@ -1,7 +1,7 @@
 .breadBottom {
   height: 13%;
   width: 80%;
-  background: linear-gradient(#F08E4A, #e27b36);
+  background: linear-gradient(#f08e4a, #e27b36);
   border-radius: 0 0 30px 30px;
   box-shadow: inset -15px 0 #c15711;
   margin: 2% auto;
@@ -30,7 +30,7 @@
 }
 
 .seeds1:after {
-  content: "";
+  content: '';
   width: 100%;
   height: 100%;
   position: absolute;
@@ -43,7 +43,7 @@
 }
 
 .seeds1:before {
-  content: "";
+  content: '';
   width: 100%;
   height: 100%;
   position: absolute;
@@ -68,7 +68,7 @@
 }
 
 .seeds2:before {
-  content: "";
+  content: '';
   width: 100%;
   height: 100%;
   position: absolute;
@@ -79,7 +79,6 @@
   transform: rotate(90deg);
   box-shadow: inset 1px 3px #c9c9c9;
 }
-
 
 .meat {
   width: 80%;

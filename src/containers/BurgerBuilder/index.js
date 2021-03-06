@@ -80,7 +80,21 @@ class BurgerBuilder extends Component {
   startPurchasingHandler = () => this.setState({ purchasing: true });
   cancelPurchasingHandler = () => this.setState({ purchasing: false });
 
+  transformIngredientsAsQueryParams = () => {
+    const { ingredients } = this.state;
+
+    const encodedIngredients = _.map(ingredients, (count, ingredient) => {
+      const ingredientNameEncoded = encodeURIComponent(ingredient);
+      const ingredientCountEncoded = encodeURIComponent(count);
+
+      return `${ingredientNameEncoded}=${ingredientCountEncoded}`;
+    });
+
+    return _.join(encodedIngredients, '&');
+  };
+
   continuePurchasingHandler = async () => {
+    const { history } = this.props;
     const { ingredients, totalPrice } = this.state;
 
     const order = {
@@ -96,11 +110,12 @@ class BurgerBuilder extends Component {
 
     const response = await axiosOrders.post('/orders.json', order);
 
-    if (_.get(response, 'status') === 200) {
-      // yeah!
-    }
-
     this.setState({ purchasing: false, sendingPurchase: false });
+
+    if (_.get(response, 'status') === 200) {
+      const ingredientsAsQueryParams = this.transformIngredientsAsQueryParams();
+      history.push({ pathname: '/checkout', search: ingredientsAsQueryParams });
+    }
   };
 
   render() {
