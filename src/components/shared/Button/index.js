@@ -1,11 +1,11 @@
 import React from 'react';
 
-import cx from 'classnames';
+import classnames from 'classnames';
 
 import styles from './styles.module.css';
 
 const Button = ({ type, onClick, children }) => (
-  <button className={cx(styles.button, styles[type])} onClick={onClick}>
+  <button className={classnames(styles.button, styles[type])} onClick={onClick}>
     {children}
   </button>
 );

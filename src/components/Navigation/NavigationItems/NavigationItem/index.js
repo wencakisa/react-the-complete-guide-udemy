@@ -1,14 +1,14 @@
 import React from 'react';
 
-import cx from 'classnames';
+import { NavLink } from 'react-router-dom';
 
 import styles from './styles.module.css';
 
-const NavigationItem = ({ link, active, children }) => (
+const NavigationItem = ({ link, exact, children }) => (
   <li className={styles.navigationItem}>
-    <a href={link} className={cx({ [styles.active]: active })}>
+    <NavLink exact={exact} to={link} activeClassName={styles.active}>
       {children}
-    </a>
+    </NavLink>
   </li>
 );
 

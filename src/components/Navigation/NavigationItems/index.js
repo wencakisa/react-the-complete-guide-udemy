@@ -7,10 +7,10 @@ const NavigationItems = () => (
   <div className={styles.navigationItems}>
     <nav>
       <ul>
-        <NavigationItem active link="/">
+        <NavigationItem exact link="/">
           Burger Builder
         </NavigationItem>
-        <NavigationItem link="/">Checkout</NavigationItem>
+        <NavigationItem link="/orders">Orders</NavigationItem>
       </ul>
     </nav>
   </div>
