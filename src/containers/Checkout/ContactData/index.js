@@ -7,6 +7,17 @@ import { Button, Spinner, Input } from '../../../components/shared';
 
 import styles from './styles.module.css';
 
+const DELIVERY_OPTIONS = {
+  FASTEST: {
+    value: 'fastest',
+    displayValue: 'Fastest'
+  },
+  CHEAPEST: {
+    value: 'cheapest',
+    displayValue: 'Cheapest'
+  }
+};
+
 class ContactData extends Component {
   state = {
     orderForm: {
@@ -26,7 +37,7 @@ class ContactData extends Component {
       email: {
         elementType: 'input',
         elementConfig: {
-          type: 'text',
+          type: 'email',
           placeholder: 'Your email'
         },
         value: '',
@@ -67,16 +78,15 @@ class ContactData extends Component {
       deliveryMethod: {
         elementType: 'select',
         elementConfig: {
-          options: [
-            { value: 'fastest', displayValue: 'Fastest' },
-            { value: 'cheapest', displayValue: 'Cheapest' }
-          ]
+          options: _.values(DELIVERY_OPTIONS)
         },
-        value: 'fastest',
-        isValid: false,
-        touched: false
+        value: DELIVERY_OPTIONS.FASTEST.value,
+        isValid: true,
+        validation: {},
+        touched: true
       }
     },
+    formIsValid: false,
     loading: false
   };
 
@@ -130,27 +140,36 @@ class ContactData extends Component {
     return isValid;
   };
 
+  setOverallFormValidity = () =>
+    this.setState(prevState => ({
+      formIsValid: _.every(prevState.orderForm, 'isValid')
+    }));
+
   onInputChange = (event, fieldName) => {
     const { value } = event.target;
 
-    this.setState(prevState => ({
-      orderForm: {
-        ...prevState.orderForm,
-        [fieldName]: {
-          ...prevState.orderForm[fieldName],
-          touched: true,
-          value: event.target.value,
-          isValid: this.checkInputValidity(
+    this.setState(prevState => {
+      const fieldIsValid = this.checkInputValidity(
+        value,
+        prevState.orderForm[fieldName].validation
+      );
+
+      return {
+        orderForm: {
+          ...prevState.orderForm,
+          [fieldName]: {
+            ...prevState.orderForm[fieldName],
             value,
-            prevState.orderForm[fieldName].validation
-          )
+            touched: true,
+            isValid: fieldIsValid
+          }
         }
-      }
-    }));
+      };
+    }, this.setOverallFormValidity);
   };
 
   render() {
-    const { orderForm, loading } = this.state;
+    const { orderForm, formIsValid, loading } = this.state;
 
     return (
       <div className={styles.contactData}>
@@ -168,7 +187,9 @@ class ContactData extends Component {
                 />
               ))}
 
-              <Button type="success">Order</Button>
+              <Button type="success" disabled={!formIsValid}>
+                Order
+              </Button>
             </form>
           </React.Fragment>
         )}
