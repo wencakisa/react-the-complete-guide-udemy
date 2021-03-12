@@ -8,7 +8,6 @@ import Burger from '../../components/Burger';
 import BuildControls from '../../components/Burger/BuildControls';
 import OrderSummary from '../../components/Burger/OrderSummary';
 import { Modal, Spinner } from '../../components/shared';
-import { withErrorHandler } from '../../hoc';
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -162,4 +161,4 @@ class BurgerBuilder extends Component {
   }
 }
 
-export default withErrorHandler(BurgerBuilder, axiosOrders);
+export default BurgerBuilder;
