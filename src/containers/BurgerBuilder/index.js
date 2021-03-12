@@ -1,130 +1,56 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import _ from 'lodash';
 
-import axiosOrders from '../../config/axios-orders';
+import * as actionTypes from '../../store/actions';
+// import axiosOrders from '../../config/axios-orders';
 
 import Burger from '../../components/Burger';
 import BuildControls from '../../components/Burger/BuildControls';
 import OrderSummary from '../../components/Burger/OrderSummary';
 import { Modal, Spinner } from '../../components/shared';
 
-const INGREDIENT_PRICES = {
-  salad: 0.5,
-  bacon: 0.7,
-  cheese: 0.4,
-  meat: 1.3
-};
-
 class BurgerBuilder extends Component {
   state = {
-    ingredients: null,
     loadingIngredients: false,
-    totalPrice: 5,
-    purchasable: false,
     purchasing: false,
     sendingPurchase: false
   };
 
-  componentDidMount() {
-    this.initializeIngredients();
-  }
+  // componentDidMount() {
+  //   this.initializeIngredients();
+  // }
 
-  initializeIngredients = async () => {
-    this.setState({ loadingIngredients: true });
+  // initializeIngredients = async () => {
+  //   this.setState({ loadingIngredients: true });
 
-    const response = await axiosOrders.get('/ingredients.json');
+  //   const response = await axiosOrders.get('/ingredients.json');
 
-    if (response && response.status === 200) {
-      this.setState({ ingredients: response.data });
-    }
+  //   if (response && response.status === 200) {
+  //     this.setState({ ingredients: response.data });
+  //   }
 
-    this.setState({ loadingIngredients: false });
-  };
-
-  addIngredientHandler = type =>
-    this.setState(
-      prevState => ({
-        ingredients: {
-          ...prevState.ingredients,
-          [type]: prevState.ingredients[type] + 1
-        },
-        totalPrice: prevState.totalPrice + INGREDIENT_PRICES[type]
-      }),
-      this.updatePurchaseState
-    );
-
-  removeIngredientHandler = type => {
-    const oldCount = this.state.ingredients[type];
-    let newCount = oldCount - 1;
-
-    if (newCount >= 0) {
-      const ingredients = {
-        ...this.state.ingredients,
-        [type]: newCount
-      };
-
-      const totalPrice = this.state.totalPrice - INGREDIENT_PRICES[type];
-
-      this.setState({ ingredients, totalPrice }, this.updatePurchaseState);
-    }
-  };
-
-  updatePurchaseState = () => {
-    const totalIngredientsCount = _.sum(_.values(this.state.ingredients));
-
-    this.setState({ purchasable: totalIngredientsCount > 0 });
-  };
+  //   this.setState({ loadingIngredients: false });
+  // };
 
   startPurchasingHandler = () => this.setState({ purchasing: true });
   cancelPurchasingHandler = () => this.setState({ purchasing: false });
 
-  transformIngredientsAsQueryParams = () => {
-    const { ingredients } = this.state;
-
-    const encodedIngredients = _.map(ingredients, (count, ingredient) => {
-      const ingredientNameEncoded = encodeURIComponent(ingredient);
-      const ingredientCountEncoded = encodeURIComponent(count);
-
-      return `${ingredientNameEncoded}=${ingredientCountEncoded}`;
-    });
-
-    return _.join(encodedIngredients, '&');
-  };
-
-  transformTotalPriceAsQueryParam = () => {
-    const { totalPrice } = this.state;
-
-    const totalPriceEncoded = encodeURIComponent(totalPrice);
-
-    return `price=${totalPriceEncoded}`;
-  };
-
-  continuePurchasingHandler = () => {
-    const { history } = this.props;
-
-    const ingredientsAsQueryParams = this.transformIngredientsAsQueryParams();
-    const priceAsQueryParam = this.transformTotalPriceAsQueryParam();
-
-    const queryParams = _.join(
-      [ingredientsAsQueryParams, priceAsQueryParam],
-      '&'
-    );
-
-    history.push({ pathname: '/checkout', search: queryParams });
-  };
+  goToCheckout = () => this.props.history.push('/checkout');
 
   render() {
+    const { loadingIngredients, purchasing, sendingPurchase } = this.state;
+
     const {
       ingredients,
-      loadingIngredients,
       totalPrice,
-      purchasable,
-      purchasing,
-      sendingPurchase
-    } = this.state;
+      addIngredientHandler,
+      removeIngredientHandler
+    } = this.props;
 
     const disabledInfo = _.mapValues(ingredients, value => value <= 0);
+    const purchasable = _.sum(_.values(ingredients)) > 0;
 
     return (
       <>
@@ -133,8 +59,8 @@ class BurgerBuilder extends Component {
           <>
             <Burger ingredients={ingredients} />
             <BuildControls
-              addIngredient={this.addIngredientHandler}
-              removeIngredient={this.removeIngredientHandler}
+              addIngredient={addIngredientHandler}
+              removeIngredient={removeIngredientHandler}
               disabledInfo={disabledInfo}
               price={totalPrice}
               purchasable={purchasable}
@@ -148,7 +74,7 @@ class BurgerBuilder extends Component {
                   <OrderSummary
                     ingredients={ingredients}
                     totalPrice={totalPrice}
-                    continuePurchasing={this.continuePurchasingHandler}
+                    continuePurchasing={this.goToCheckout}
                     cancelPurchasing={this.cancelPurchasingHandler}
                   />
                 )}
@@ -161,4 +87,16 @@ class BurgerBuilder extends Component {
   }
 }
 
-export default BurgerBuilder;
+const mapStateToProps = ({ ingredients, totalPrice }) => ({
+  ingredients,
+  totalPrice
+});
+
+const mapDispatchToProps = dispatch => ({
+  addIngredientHandler: ingredientName =>
+    dispatch({ type: actionTypes.ADD_INGREDIENT, ingredientName }),
+  removeIngredientHandler: ingredientName =>
+    dispatch({ type: actionTypes.REMOVE_INGREDIENT, ingredientName })
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(BurgerBuilder);

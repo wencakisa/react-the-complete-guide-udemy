@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import _ from 'lodash';
+import { connect } from 'react-redux';
 
 import axiosOrders from '../../../config/axios-orders';
 import { Button, Spinner, Input } from '../../../components/shared';
@@ -198,4 +199,9 @@ class ContactData extends Component {
   }
 }
 
-export default ContactData;
+const mapStateToProps = ({ ingredients, totalPrice }) => ({
+  ingredients,
+  totalPrice
+});
+
+export default connect(mapStateToProps)(ContactData);
