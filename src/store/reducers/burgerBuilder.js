@@ -15,46 +15,53 @@ const initialState = {
   error: false
 };
 
+const addIngredient = (state, { ingredientName }) => ({
+  ...state,
+  ingredients: {
+    ...state.ingredients,
+    [ingredientName]: state.ingredients[ingredientName] + 1
+  },
+  totalPrice: state.totalPrice + INGREDIENT_PRICES[ingredientName]
+});
+
+const removeIngredient = (state, { ingredientName }) => ({
+  ...state,
+  ingredients: {
+    ...state.ingredients,
+    [ingredientName]: state.ingredients[ingredientName] - 1
+  },
+  totalPrice: state.totalPrice - INGREDIENT_PRICES[ingredientName]
+});
+
+const setIngredients = (state, { ingredients }) => ({
+  ...state,
+  ingredients: {
+    salad: ingredients.salad,
+    bacon: ingredients.bacon,
+    cheese: ingredients.cheese,
+    meat: ingredients.meat
+  },
+  totalPrice: STARTING_PRICE,
+  error: false
+});
+
+const fetchIngredientsFailed = (state, action) => ({ ...state, error: true });
+
 const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case actionTypes.ADD_INGREDIENT:
-      return {
-        ...state,
-        ingredients: {
-          ...state.ingredients,
-          [action.ingredientName]: state.ingredients[action.ingredientName] + 1
-        },
-        totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName]
-      };
-    case actionTypes.REMOVE_INGREDIENT:
-      return {
-        ...state,
-        ingredients: {
-          ...state.ingredients,
-          [action.ingredientName]: state.ingredients[action.ingredientName] - 1
-        },
-        totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName]
-      };
-    case actionTypes.SET_INGREDIENTS:
-      return {
-        ...state,
-        ingredients: {
-          salad: action.ingredients.salad,
-          bacon: action.ingredients.bacon,
-          cheese: action.ingredients.cheese,
-          meat: action.ingredients.meat
-        },
-        totalPrice: STARTING_PRICE,
-        error: false
-      };
-    case actionTypes.FETCH_INGREDIENTS_FAILED:
-      return {
-        ...state,
-        error: true
-      };
-    default:
-      return state;
+  const mapping = {
+    [actionTypes.ADD_INGREDIENT]: addIngredient,
+    [actionTypes.REMOVE_INGREDIENT]: removeIngredient,
+    [actionTypes.SET_INGREDIENTS]: setIngredients,
+    [actionTypes.FETCH_INGREDIENTS_FAILED]: fetchIngredientsFailed
+  };
+
+  const method = mapping[action.type];
+
+  if (!method) {
+    return state;
   }
+
+  return method(state, action);
 };
 
 export default reducer;

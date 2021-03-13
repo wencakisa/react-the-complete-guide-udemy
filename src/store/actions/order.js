@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import * as actionTypes from './actionTypes';
 import axiosOrders from '../../config/axios-orders';
 
@@ -30,3 +32,31 @@ export const purchaseBurger = orderData => {
 };
 
 export const purchaseInit = () => ({ type: actionTypes.PURCHASE_INIT });
+
+export const fetchOrdersSuccess = orders => ({
+  type: actionTypes.FETCH_ORDERS_SUCCESS,
+  orders
+});
+
+export const fetchOrdersFail = error => ({
+  type: actionTypes.FETCH_ORDERS_FAIL,
+  error
+});
+
+export const fetchOrdersStart = () => ({
+  type: actionTypes.FETCH_ORDERS_START
+});
+
+export const fetchOrders = () => {
+  return async dispatch => {
+    dispatch(fetchOrdersStart());
+
+    try {
+      const response = await axiosOrders.get('/orders.json');
+      const orders = _.map(response.data, (values, id) => ({ id, ...values }));
+      dispatch(fetchOrdersSuccess(orders));
+    } catch (error) {
+      dispatch(fetchOrdersFail(error));
+    }
+  };
+};
