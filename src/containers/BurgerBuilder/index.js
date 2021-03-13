@@ -6,7 +6,8 @@ import _ from 'lodash';
 import {
   addIngredient,
   removeIngredient,
-  initIngredients
+  initIngredients,
+  purchaseInit
 } from '../../store/actions';
 
 import Burger from '../../components/Burger';
@@ -26,7 +27,10 @@ class BurgerBuilder extends Component {
   startPurchasingHandler = () => this.setState({ purchasing: true });
   cancelPurchasingHandler = () => this.setState({ purchasing: false });
 
-  goToCheckout = () => this.props.history.push('/checkout');
+  goToCheckout = () => {
+    this.props.onInitPurchase();
+    this.props.history.push('/checkout');
+  };
 
   render() {
     const { purchasing } = this.state;
@@ -78,7 +82,9 @@ class BurgerBuilder extends Component {
   }
 }
 
-const mapStateToProps = ({ ingredients, totalPrice, error }) => ({
+const mapStateToProps = ({
+  burgerBuilder: { ingredients, totalPrice, error }
+}) => ({
   ingredients,
   totalPrice,
   error
@@ -89,7 +95,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(addIngredient(ingredientName)),
   removeIngredientHandler: ingredientName =>
     dispatch(removeIngredient(ingredientName)),
-  initIngredientsHandler: () => dispatch(initIngredients())
+  initIngredientsHandler: () => dispatch(initIngredients()),
+  onInitPurchase: () => dispatch(purchaseInit())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BurgerBuilder);
