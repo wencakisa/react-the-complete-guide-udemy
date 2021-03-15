@@ -8,7 +8,7 @@ import NavigationItems from '../NavigationItems';
 
 import styles from './styles.module.css';
 
-const SideDrawer = ({ open, close }) => {
+const SideDrawer = ({ open, close, isAuthenticated }) => {
   return (
     <>
       <div
@@ -19,7 +19,7 @@ const SideDrawer = ({ open, close }) => {
         <div className={styles.logo}>
           <Logo />
         </div>
-        <NavigationItems />
+        <NavigationItems isAuthenticated={isAuthenticated} />
       </div>
       <Backdrop show={open} onClick={close} />
     </>

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 
 import { auth } from '../../store/actions';
-import { Button, Input } from '../../components/shared';
+import { Button, Input, Spinner } from '../../components/shared';
 
 import styles from './styles.module.css';
 
@@ -67,7 +67,8 @@ class Auth extends Component {
     }
 
     if (rules.isNumeric) {
-      isValid = _.isNumeric(value) && isValid;
+      const pattern = /^\d+$/;
+      isValid = pattern.test(value) && isValid;
     }
 
     return isValid;
@@ -116,6 +117,7 @@ class Auth extends Component {
   };
 
   render() {
+    const { loading, error } = this.props;
     const { controls, formIsValid, isSignUp } = this.state;
 
     const authModeButtonText = isSignUp
@@ -126,31 +128,39 @@ class Auth extends Component {
 
     return (
       <div className={styles.auth}>
-        <form onSubmit={this.handleSubmit}>
-          {_.map(controls, ({ validation, ...inputProps }, fieldName) => (
-            <Input
-              key={fieldName}
-              shouldValidate={!_.isNil(validation)}
-              onChange={event => this.onInputChange(event, fieldName)}
-              {...inputProps}
-            />
-          ))}
+        {error && <p>{error.message}</p>}
+        {loading && <Spinner />}
+        {!loading && (
+          <>
+            <form onSubmit={this.handleSubmit}>
+              {_.map(controls, ({ validation, ...inputProps }, fieldName) => (
+                <Input
+                  key={fieldName}
+                  shouldValidate={!_.isNil(validation)}
+                  onChange={event => this.onInputChange(event, fieldName)}
+                  {...inputProps}
+                />
+              ))}
 
-          <Button type="success" disabled={!formIsValid}>
-            {submitButtonText}
-          </Button>
-        </form>
-        <Button type="danger" onClick={this.switchAuthMode}>
-          {authModeButtonText}
-        </Button>
+              <Button type="success" disabled={!formIsValid}>
+                {submitButtonText}
+              </Button>
+            </form>
+            <Button type="danger" onClick={this.switchAuthMode}>
+              {authModeButtonText}
+            </Button>
+          </>
+        )}
       </div>
     );
   }
 }
+
+const mapStateToProps = ({ auth: { error, loading } }) => ({ error, loading });
 
 const mapDispatchToProps = dispatch => ({
   onAuth: (email, password, isSignUp) =>
     dispatch(auth(email, password, isSignUp))
 });
 
-export default connect(null, mapDispatchToProps)(Auth);
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);

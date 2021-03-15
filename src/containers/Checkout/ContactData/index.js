@@ -96,7 +96,7 @@ class ContactData extends Component {
     event.preventDefault();
 
     const { orderForm } = this.state;
-    const { ingredients, totalPrice } = this.props;
+    const { ingredients, totalPrice, token } = this.props;
 
     const formData = _.reduce(
       orderForm,
@@ -113,7 +113,7 @@ class ContactData extends Component {
       formData
     };
 
-    this.props.onOrderHandler(orderData);
+    this.props.onOrderHandler(orderData, token);
   };
 
   checkInputValidity = (value, rules) => {
@@ -137,7 +137,8 @@ class ContactData extends Component {
     }
 
     if (rules.isNumeric) {
-      isValid = _.isNumeric(value) && isValid;
+      const pattern = /^\d+$/;
+      isValid = pattern.test(value) && isValid;
     }
 
     return isValid;
@@ -204,15 +205,18 @@ class ContactData extends Component {
 
 const mapStateToProps = ({
   burgerBuilder: { ingredients, totalPrice },
-  order: { loading }
+  order: { loading },
+  auth: { token }
 }) => ({
   ingredients,
   totalPrice,
-  loading
+  loading,
+  token
 });
 
 const mapDispatchToProps = dispatch => ({
-  onOrderHandler: orderData => dispatch(purchaseBurger(orderData))
+  onOrderHandler: (orderData, token) =>
+    dispatch(purchaseBurger(orderData, token))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ContactData);

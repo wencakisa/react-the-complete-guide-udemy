@@ -6,14 +6,14 @@ import DrawerToggle from '../SideDrawer/DrawerToggle';
 
 import styles from './styles.module.css';
 
-const Toolbar = ({ toggleSideDrawer }) => (
+const Toolbar = ({ toggleSideDrawer, isAuthenticated }) => (
   <header className={styles.toolbar}>
     <DrawerToggle onClick={toggleSideDrawer} />
     <div className={styles.logo}>
       <Logo />
     </div>
     <div className={styles.desktopOnly}>
-      <NavigationItems />
+      <NavigationItems isAuthenticated={isAuthenticated} />
     </div>
   </header>
 );

@@ -5,7 +5,11 @@ import { BrowserRouter } from 'react-router-dom';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 
-import { burgerBuilderReducer, orderReducer } from './store/reducers/';
+import {
+  burgerBuilderReducer,
+  orderReducer,
+  authReducer
+} from './store/reducers/';
 
 import './index.css';
 import App from './App';
@@ -14,7 +18,8 @@ import reportWebVitals from './reportWebVitals';
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const rootReducer = combineReducers({
   burgerBuilder: burgerBuilderReducer,
-  order: orderReducer
+  order: orderReducer,
+  auth: authReducer
 });
 const store = createStore(
   rootReducer,
