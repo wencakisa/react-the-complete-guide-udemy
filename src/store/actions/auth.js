@@ -14,13 +14,24 @@ export const authSuccess = authData => ({
 
 export const authFail = error => ({ type: actionTypes.AUTH_FAIL, error });
 
-export const logout = () => ({ type: actionTypes.AUTH_LOGOUT });
+export const logout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('expirationDate');
+  localStorage.removeItem('userId');
+
+  return { type: actionTypes.AUTH_LOGOUT };
+};
 
 export const checkAuthTokenTimeout = expirationTime => {
   return dispatch => {
-    setTimeout(() => dispatch(logout()), expirationTime * 1000);
+    setTimeout(() => dispatch(logout()), expirationTime);
   };
 };
+
+export const setAuthRedirectPath = authRedirectPath => ({
+  type: actionTypes.AUTH_SET_REDIRECT_PATH,
+  authRedirectPath
+});
 
 export const auth = (email, password, isSignUp) => {
   return async dispatch => {
@@ -40,10 +51,45 @@ export const auth = (email, password, isSignUp) => {
         token: idToken
       };
 
+      const expirationTimeInMilliseconds = expiresIn * 1000;
+      const expirationDate = new Date(
+        new Date().getTime() + expirationTimeInMilliseconds
+      );
+
+      localStorage.setItem('token', idToken);
+      localStorage.setItem('expirationDate', expirationDate);
+      localStorage.setItem('userId', localId);
+
       dispatch(authSuccess(data));
-      dispatch(checkAuthTokenTimeout(expiresIn));
+      dispatch(checkAuthTokenTimeout(expirationTimeInMilliseconds));
     } catch (error) {
       dispatch(authFail(error));
+    }
+  };
+};
+
+export const authCheckState = () => {
+  return dispatch => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      dispatch(logout());
+      return;
+    }
+
+    const now = new Date();
+    const expirationDate = new Date(localStorage.getItem('expirationDate'));
+
+    if (expirationDate > now) {
+      const userId = localStorage.getItem('userId');
+      const data = { userId, token };
+
+      const expirationTime = expirationDate.getTime() - now.getTime();
+
+      dispatch(authSuccess(data));
+      dispatch(checkAuthTokenTimeout(expirationTime));
+    } else {
+      dispatch(logout());
     }
   };
 };

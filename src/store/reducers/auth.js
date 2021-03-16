@@ -4,7 +4,8 @@ const initialState = {
   token: null,
   userId: null,
   error: null,
-  loading: false
+  loading: false,
+  authRedirectPath: '/'
 };
 
 const authStart = (state, action) => ({ ...state, error: null, loading: true });
@@ -25,12 +26,18 @@ const authFail = (state, { error }) => ({
 
 const authLogout = (state, action) => ({ ...state, token: null, userId: null });
 
+const setAuthRedirectPath = (state, { authRedirectPath }) => ({
+  ...state,
+  authRedirectPath
+});
+
 const reducer = (state = initialState, action) => {
   const mapping = {
     [actionTypes.AUTH_START]: authStart,
     [actionTypes.AUTH_SUCCESS]: authSuccess,
     [actionTypes.AUTH_FAIL]: authFail,
-    [actionTypes.AUTH_LOGOUT]: authLogout
+    [actionTypes.AUTH_LOGOUT]: authLogout,
+    [actionTypes.AUTH_SET_REDIRECT_PATH]: setAuthRedirectPath
   };
 
   const method = mapping[action.type];

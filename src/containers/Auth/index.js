@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 
 import _ from 'lodash';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
-import { auth } from '../../store/actions';
+import { auth, setAuthRedirectPath } from '../../store/actions';
 import { Button, Input, Spinner } from '../../components/shared';
 
 import styles from './styles.module.css';
@@ -45,6 +46,18 @@ class Auth extends Component {
     formIsValid: false,
     isSignUp: true
   };
+
+  componentDidMout() {
+    const {
+      isBuildingBurger,
+      authRedirectPath,
+      onSetAuthRedirectPath
+    } = this.props;
+
+    if (!isBuildingBurger && authRedirectPath !== '/') {
+      onSetAuthRedirectPath();
+    }
+  }
 
   checkInputValidity = (value, rules) => {
     let isValid = true;
@@ -117,7 +130,7 @@ class Auth extends Component {
   };
 
   render() {
-    const { loading, error } = this.props;
+    const { isAuthenticated, loading, error, authRedirectPath } = this.props;
     const { controls, formIsValid, isSignUp } = this.state;
 
     const authModeButtonText = isSignUp
@@ -125,6 +138,10 @@ class Auth extends Component {
       : 'Create an account';
 
     const submitButtonText = isSignUp ? 'Sign up' : 'Log in';
+
+    if (isAuthenticated) {
+      return <Redirect to={authRedirectPath} />;
+    }
 
     return (
       <div className={styles.auth}>
@@ -156,11 +173,21 @@ class Auth extends Component {
   }
 }
 
-const mapStateToProps = ({ auth: { error, loading } }) => ({ error, loading });
+const mapStateToProps = ({
+  auth: { token, error, loading, authRedirectPath },
+  burgerBuilder: { building }
+}) => ({
+  isAuthenticated: !_.isNull(token),
+  error,
+  loading,
+  authRedirectPath,
+  isBuildingBurger: building
+});
 
 const mapDispatchToProps = dispatch => ({
   onAuth: (email, password, isSignUp) =>
-    dispatch(auth(email, password, isSignUp))
+    dispatch(auth(email, password, isSignUp)),
+  onSetAuthRedirectPath: () => dispatch(setAuthRedirectPath('/'))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Auth);
