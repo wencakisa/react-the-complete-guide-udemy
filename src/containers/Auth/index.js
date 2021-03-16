@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
+import { checkInputValidity } from '../../utils';
 import { auth, setAuthRedirectPath } from '../../store/actions';
 import { Button, Input, Spinner } from '../../components/shared';
 
@@ -59,34 +60,6 @@ class Auth extends Component {
     }
   }
 
-  checkInputValidity = (value, rules) => {
-    let isValid = true;
-
-    if (rules.required) {
-      isValid = !_.isEmpty(value) && isValid;
-    }
-
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid;
-    }
-
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid;
-    }
-
-    if (rules.isEmail) {
-      const pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-      isValid = pattern.test(value) && isValid;
-    }
-
-    if (rules.isNumeric) {
-      const pattern = /^\d+$/;
-      isValid = pattern.test(value) && isValid;
-    }
-
-    return isValid;
-  };
-
   setOverallFormValidity = () =>
     this.setState(prevState => ({
       formIsValid: _.every(prevState.controls, 'isValid')
@@ -96,7 +69,7 @@ class Auth extends Component {
     const { value } = event.target;
 
     this.setState(prevState => {
-      const fieldIsValid = this.checkInputValidity(
+      const fieldIsValid = checkInputValidity(
         value,
         prevState.controls[fieldName].validation
       );

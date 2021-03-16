@@ -15,7 +15,8 @@ const SideDrawer = ({ open, close, isAuthenticated }) => {
         className={classnames(styles.sideDrawer, {
           [styles.open]: open,
           [styles.close]: !open
-        })}>
+        })}
+        onClick={close}>
         <div className={styles.logo}>
           <Logo />
         </div>

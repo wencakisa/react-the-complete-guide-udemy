@@ -8,7 +8,7 @@ const initialState = {
 
 const purchaseInit = (state, action) => ({ ...state, purchased: false });
 
-const purchaseBurgerStart = (state, action) => ({ ...state, loading: false });
+const purchaseBurgerStart = (state, action) => ({ ...state, loading: true });
 
 const purchaseBurgerSuccess = (state, { orderId, orderData }) => {
   const newOrder = {

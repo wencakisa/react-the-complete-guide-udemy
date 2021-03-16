@@ -8,9 +8,3 @@
   width: 100%;
   margin: auto;
 }
-
-@media (min-width: 600px) {
-  .summary {
-    width: 500px;
-  }
-}

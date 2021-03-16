@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 
+import { checkInputValidity } from '../../../utils';
 import { purchaseBurger } from '../../../store/actions';
 import { Button, Spinner, Input } from '../../../components/shared';
 
@@ -117,34 +118,6 @@ class ContactData extends Component {
     this.props.onOrderHandler(orderData, token);
   };
 
-  checkInputValidity = (value, rules) => {
-    let isValid = true;
-
-    if (rules.required) {
-      isValid = !_.isEmpty(value) && isValid;
-    }
-
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid;
-    }
-
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid;
-    }
-
-    if (rules.isEmail) {
-      const pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-      isValid = pattern.test(value) && isValid;
-    }
-
-    if (rules.isNumeric) {
-      const pattern = /^\d+$/;
-      isValid = pattern.test(value) && isValid;
-    }
-
-    return isValid;
-  };
-
   setOverallFormValidity = () =>
     this.setState(prevState => ({
       formIsValid: _.every(prevState.orderForm, 'isValid')
@@ -154,7 +127,7 @@ class ContactData extends Component {
     const { value } = event.target;
 
     this.setState(prevState => {
-      const fieldIsValid = this.checkInputValidity(
+      const fieldIsValid = checkInputValidity(
         value,
         prevState.orderForm[fieldName].validation
       );
