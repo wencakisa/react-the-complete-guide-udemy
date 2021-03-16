@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import * as actionTypes from './actionTypes';
 import axiosOrders from '../../config/axios-orders';
+import { transformObjectToQueryParams } from '../../utils';
 
 export const purchaseBurgerSuccess = (orderId, orderData) => ({
   type: actionTypes.PURCHASE_BURGER_SUCCESS,
@@ -50,12 +51,21 @@ export const fetchOrdersStart = () => ({
   type: actionTypes.FETCH_ORDERS_START
 });
 
-export const fetchOrders = token => {
+export const fetchOrders = (token, userId) => {
   return async dispatch => {
     dispatch(fetchOrdersStart());
 
     try {
-      const response = await axiosOrders.get(`/orders.json?auth=${token}`);
+      const queryParams = {
+        auth: token,
+        orderBy: 'userId',
+        equalTo: userId
+      };
+      const queryParamsString = transformObjectToQueryParams(queryParams);
+
+      const response = await axiosOrders.get(
+        `/orders.json?${queryParamsString}`
+      );
       const orders = _.map(response.data, (values, id) => ({ id, ...values }));
       dispatch(fetchOrdersSuccess(orders));
     } catch (error) {

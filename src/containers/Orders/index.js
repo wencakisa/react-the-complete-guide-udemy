@@ -10,8 +10,8 @@ import { Spinner } from '../../components/shared';
 
 class Orders extends Component {
   componentDidMount() {
-    const { token, onFetchOrders } = this.props;
-    onFetchOrders(token);
+    const { token, userId, onFetchOrders } = this.props;
+    onFetchOrders(token, userId);
   }
 
   render() {
@@ -32,14 +32,18 @@ class Orders extends Component {
   }
 }
 
-const mapStateToProps = ({ order: { orders, loading }, auth: { token } }) => ({
+const mapStateToProps = ({
+  order: { orders, loading },
+  auth: { token, userId }
+}) => ({
   orders,
   loading,
-  token
+  token,
+  userId
 });
 
 const mapDispatchToProps = dispatch => ({
-  onFetchOrders: token => dispatch(fetchOrders(token))
+  onFetchOrders: (token, userId) => dispatch(fetchOrders(token, userId))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Orders);

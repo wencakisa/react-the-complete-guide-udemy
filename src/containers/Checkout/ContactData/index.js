@@ -96,7 +96,7 @@ class ContactData extends Component {
     event.preventDefault();
 
     const { orderForm } = this.state;
-    const { ingredients, totalPrice, token } = this.props;
+    const { ingredients, totalPrice, token, userId } = this.props;
 
     const formData = _.reduce(
       orderForm,
@@ -110,7 +110,8 @@ class ContactData extends Component {
     const orderData = {
       ingredients,
       totalPrice,
-      formData
+      formData,
+      userId
     };
 
     this.props.onOrderHandler(orderData, token);
@@ -206,12 +207,13 @@ class ContactData extends Component {
 const mapStateToProps = ({
   burgerBuilder: { ingredients, totalPrice },
   order: { loading },
-  auth: { token }
+  auth: { token, userId }
 }) => ({
   ingredients,
   totalPrice,
   loading,
-  token
+  token,
+  userId
 });
 
 const mapDispatchToProps = dispatch => ({
