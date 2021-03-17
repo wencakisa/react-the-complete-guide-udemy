@@ -2,14 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
+import createSagaMiddleware from 'redux-saga';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import thunk from 'redux-thunk';
 
 import {
   burgerBuilderReducer,
   orderReducer,
   authReducer
 } from './store/reducers/';
+import { watchAuth, watchBurgerBuilder, watchOrder } from './store/sagas';
 
 import './index.css';
 import App from './App';
@@ -21,10 +22,16 @@ const rootReducer = combineReducers({
   order: orderReducer,
   auth: authReducer
 });
+const sagaMiddleware = createSagaMiddleware();
+
 const store = createStore(
   rootReducer,
-  composeEnhancers(applyMiddleware(thunk))
+  composeEnhancers(applyMiddleware(sagaMiddleware))
 );
+
+sagaMiddleware.run(watchAuth);
+sagaMiddleware.run(watchBurgerBuilder);
+sagaMiddleware.run(watchOrder);
 
 const app = (
   <React.StrictMode>
