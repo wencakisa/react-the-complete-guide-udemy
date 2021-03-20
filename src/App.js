@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 
 import _ from 'lodash';
 import { connect } from 'react-redux';
@@ -8,48 +8,39 @@ import { authCheckState } from './store/actions';
 import { Layout } from './components';
 import { BurgerBuilder, Checkout, Orders, Auth, Logout } from './containers';
 
-class App extends Component {
-  componentDidMount() {
-    this.props.onTryAutoSignup();
-  }
+const App = ({ onTryAutoSignup, isAuthenticated }) => {
+  useEffect(() => {
+    onTryAutoSignup();
+  }, []);
 
-  render() {
-    const { isAuthenticated } = this.props;
+  const routes = [
+    { path: '/auth', component: Auth, exact: false },
+    { path: '/logout', component: Logout, exact: false },
+    { path: '/', component: BurgerBuilder, exact: true }
+  ];
 
-    const routes = [
-      { path: '/auth', component: Auth, exact: false },
-      { path: '/logout', component: Logout, exact: false },
-      { path: '/', component: BurgerBuilder, exact: true }
+  if (isAuthenticated) {
+    const protectedRoutes = [
+      { path: '/checkout', component: Checkout, exact: false },
+      { path: '/orders', component: Orders, exact: false }
     ];
 
-    if (isAuthenticated) {
-      const protectedRoutes = [
-        { path: '/checkout', component: Checkout, exact: false },
-        { path: '/orders', component: Orders, exact: false }
-      ];
-
-      routes.push(...protectedRoutes);
-    }
-
-    return (
-      <div>
-        <Layout>
-          <Switch>
-            {_.map(routes, ({ path, component, exact }) => (
-              <Route
-                key={path}
-                path={path}
-                component={component}
-                exact={exact}
-              />
-            ))}
-            <Redirect to="/" />
-          </Switch>
-        </Layout>
-      </div>
-    );
+    routes.push(...protectedRoutes);
   }
-}
+
+  return (
+    <div>
+      <Layout>
+        <Switch>
+          {_.map(routes, ({ path, component, exact }) => (
+            <Route key={path} path={path} component={component} exact={exact} />
+          ))}
+          <Redirect to="/" />
+        </Switch>
+      </Layout>
+    </div>
+  );
+};
 
 const mapStateToProps = ({ auth: { token } }) => ({
   isAuthenticated: !_.isNull(token)
