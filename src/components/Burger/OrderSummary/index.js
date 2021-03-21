@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import { Button } from '../../shared';
 
-export const OrderSummary = ({
+const OrderSummary = ({
   ingredients,
   totalPrice,
   continuePurchasing,
@@ -17,7 +17,7 @@ export const OrderSummary = ({
   ));
 
   return (
-    <React.Fragment>
+    <>
       <h3>Your Order</h3>
       <p>A delicious burger with the following ingredients:</p>
       <ul>{ingredientsSummary}</ul>
@@ -31,7 +31,7 @@ export const OrderSummary = ({
       <Button type="success" onClick={continuePurchasing}>
         CONTINUE
       </Button>
-    </React.Fragment>
+    </>
   );
 };
 
