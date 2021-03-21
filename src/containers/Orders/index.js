@@ -11,7 +11,7 @@ import { Spinner } from '../../components/shared';
 const Orders = ({ token, userId, onFetchOrders, orders, loading }) => {
   useEffect(() => {
     onFetchOrders(token, userId);
-  }, []);
+  }, [onFetchOrders, token, userId]);
 
   return (
     <>

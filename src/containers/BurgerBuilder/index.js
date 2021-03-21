@@ -32,7 +32,7 @@ const BurgerBuilder = ({
 
   useEffect(() => {
     initIngredientsHandler();
-  }, []);
+  }, [initIngredientsHandler]);
 
   const startPurchasingHandler = () => {
     if (isAuthenticated) {

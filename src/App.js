@@ -17,7 +17,7 @@ const LoadingFallback = () => <p>Loading...</p>;
 const App = ({ onTryAutoSignup, isAuthenticated }) => {
   useEffect(() => {
     onTryAutoSignup();
-  }, []);
+  }, [onTryAutoSignup]);
 
   const routes = [
     { path: '/auth', component: Auth, exact: false },

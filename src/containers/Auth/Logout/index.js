@@ -8,7 +8,7 @@ import { initiateLogout } from '../../../store/actions';
 const Logout = ({ initiateLogout }) => {
   useEffect(() => {
     initiateLogout();
-  }, []);
+  }, [initiateLogout]);
 
   return <Redirect to="/" />;
 };

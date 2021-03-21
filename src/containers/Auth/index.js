@@ -59,7 +59,7 @@ const Auth = ({
     if (!isBuildingBurger && authRedirectPath !== '/') {
       onSetAuthRedirectPath();
     }
-  }, []);
+  }, [isBuildingBurger, authRedirectPath, onSetAuthRedirectPath]);
 
   const onInputChange = (event, fieldName) => {
     const { value } = event.target;
