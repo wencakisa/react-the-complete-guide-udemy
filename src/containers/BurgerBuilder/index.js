@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import _ from 'lodash';
 
@@ -16,23 +16,36 @@ import BuildControls from '../../components/Burger/BuildControls';
 import OrderSummary from '../../components/Burger/OrderSummary';
 import { Modal, Spinner } from '../../components/shared';
 
-const BurgerBuilder = ({
-  history,
-  ingredients,
-  totalPrice,
-  error,
-  isAuthenticated,
-  initIngredientsHandler,
-  addIngredientHandler,
-  removeIngredientHandler,
-  onInitPurchase,
-  onSetAuthRedirectPath
-}) => {
+const BurgerBuilder = ({ history }) => {
   const [purchasing, setPurchasing] = useState(false);
 
+  const ingredients = useSelector(
+    ({ burgerBuilder: { ingredients } }) => ingredients
+  );
+  const totalPrice = useSelector(
+    ({ burgerBuilder: { totalPrice } }) => totalPrice
+  );
+  const error = useSelector(({ burgerBuilder: { error } }) => error);
+
+  const isAuthenticated = useSelector(
+    ({ auth: { token } }) => !_.isNull(token)
+  );
+
+  const dispatch = useDispatch();
+
+  const addIngredientHandler = ingredientName =>
+    dispatch(addIngredient(ingredientName));
+
+  const removeIngredientHandler = ingredientName =>
+    dispatch(removeIngredient(ingredientName));
+
+  const onInitPurchase = () => dispatch(purchaseInit());
+
+  const onSetAuthRedirectPath = path => dispatch(setAuthRedirectPath(path));
+
   useEffect(() => {
-    initIngredientsHandler();
-  }, [initIngredientsHandler]);
+    dispatch(initIngredients());
+  }, [dispatch]);
 
   const startPurchasingHandler = () => {
     if (isAuthenticated) {
@@ -89,24 +102,4 @@ const BurgerBuilder = ({
   );
 };
 
-const mapStateToProps = ({
-  burgerBuilder: { ingredients, totalPrice, error },
-  auth: { token }
-}) => ({
-  ingredients,
-  totalPrice,
-  error,
-  isAuthenticated: !_.isNull(token)
-});
-
-const mapDispatchToProps = dispatch => ({
-  addIngredientHandler: ingredientName =>
-    dispatch(addIngredient(ingredientName)),
-  removeIngredientHandler: ingredientName =>
-    dispatch(removeIngredient(ingredientName)),
-  initIngredientsHandler: () => dispatch(initIngredients()),
-  onInitPurchase: () => dispatch(purchaseInit()),
-  onSetAuthRedirectPath: path => dispatch(setAuthRedirectPath(path))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(BurgerBuilder);
+export default BurgerBuilder;
