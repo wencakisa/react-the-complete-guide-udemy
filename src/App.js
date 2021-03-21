@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 
 import _ from 'lodash';
 import { connect } from 'react-redux';
@@ -6,7 +6,13 @@ import { Switch, Route, withRouter, Redirect } from 'react-router-dom';
 
 import { authCheckState } from './store/actions';
 import { Layout } from './components';
-import { BurgerBuilder, Checkout, Orders, Auth, Logout } from './containers';
+import { BurgerBuilder, Logout } from './containers';
+
+const Checkout = React.lazy(() => import('./containers/Checkout'));
+const Orders = React.lazy(() => import('./containers/Orders'));
+const Auth = React.lazy(() => import('./containers/Auth'));
+
+const LoadingFallback = () => <p>Loading...</p>;
 
 const App = ({ onTryAutoSignup, isAuthenticated }) => {
   useEffect(() => {
@@ -31,12 +37,19 @@ const App = ({ onTryAutoSignup, isAuthenticated }) => {
   return (
     <div>
       <Layout>
-        <Switch>
-          {_.map(routes, ({ path, component, exact }) => (
-            <Route key={path} path={path} component={component} exact={exact} />
-          ))}
-          <Redirect to="/" />
-        </Switch>
+        <Suspense fallback={<LoadingFallback />}>
+          <Switch>
+            {_.map(routes, ({ path, component, exact }) => (
+              <Route
+                key={path}
+                path={path}
+                component={component}
+                exact={exact}
+              />
+            ))}
+            <Redirect to="/" />
+          </Switch>
+        </Suspense>
       </Layout>
     </div>
   );
